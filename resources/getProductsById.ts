@@ -30,7 +30,7 @@ export const handler = async (
     return {
       statusCode: 204,
       headers: {},
-      body: JSON.stringify(null),
+      body: 'Product not found',
     };
   } catch (err) {
     console.log(err);
