@@ -15,7 +15,9 @@ export const handler = async (
   try {
     const productId = getProductIdFromPath(event.path);
 
-    const product = products.find((item) => item.id === productId);
+    const productList = await Promise.resolve(products);
+
+    const product = productList.find((item) => item.id === productId);
 
     if (product) {
       return {

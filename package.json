@@ -2,7 +2,7 @@
   "name": "aws-cloud-developer-be",
   "version": "0.1.0",
   "bin": {
-    "index": "bin/index.js"
+    "main": "bin/main.js"
   },
   "scripts": {
     "build": "node build.js",
@@ -13,7 +13,8 @@
     "deploy": "cdk deploy",
     "deploy:hot": "cdk deploy --hotswap",
     "deploy:watch:hot": "cdk watch",
-    "deploy:watch": "cdk watch --no-hotswap"
+    "deploy:watch": "cdk watch --no-hotswap",
+    "get-docs": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id abcdefg123 --stage-name dev --export-type swagger latestswagger2.json"
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
