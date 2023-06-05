@@ -1,9 +1,9 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { products } from './data';
+import doc from "../docs/latestswagger2.json";
 
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {
-    const data = await Promise.resolve(JSON.stringify(products));
+    const data = await Promise.resolve(JSON.stringify(doc));
 
     return {
       statusCode: 200,

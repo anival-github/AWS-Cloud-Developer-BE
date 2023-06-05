@@ -14,9 +14,10 @@
     "deploy:hot": "cdk deploy --hotswap",
     "deploy:watch:hot": "cdk watch",
     "deploy:watch": "cdk watch --no-hotswap",
-    "get-docs": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id abcdefg123 --stage-name dev --export-type swagger latestswagger2.json"
+    "get-docs": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id fst091zkd3 --stage-name prod --export-type oas30 ./docs/latestswagger2.json"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.115",
     "@types/jest": "^29.5.1",
     "@types/node": "20.1.0",
     "aws-cdk": "2.79.1",
@@ -27,8 +28,6 @@
     "typescript": "~5.0.4"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.335.0",
-    "@types/aws-lambda": "^8.10.115",
     "aws-cdk-lib": "2.79.1",
     "constructs": "^10.0.0"
   }
