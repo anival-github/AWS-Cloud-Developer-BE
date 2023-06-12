@@ -1,0 +1,84 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Product Service",
+    "description" : "This service serves products.",
+    "version" : "2023-06-05T17:53:32Z"
+  },
+  "servers" : [ {
+    "url" : "https://29kuzo773a.execute-api.us-east-1.amazonaws.com/{basePath}",
+    "variables" : {
+      "basePath" : {
+        "default" : "prod"
+      }
+    }
+  } ],
+  "paths" : {
+    "/swagger" : {
+      "get" : {
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:504945080963:function:ProductServiceStack-ProductsGetSwaggerDocsHandlerD-24xOh0oNabcW/invocations",
+          "passthroughBehavior" : "when_no_match",
+          "type" : "aws_proxy"
+        },
+        "responses": {
+          "200": {
+            "description": "return docs"
+          },
+          "500": {
+            "description": "some error occured"
+          }
+        }
+      }
+    },
+    "/products/{id}" : {
+      "get" : {
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:504945080963:function:ProductServiceStack-ProductsGetProductsByIdHandler-jXSWaZh0pz5T/invocations",
+          "passthroughBehavior" : "when_no_match",
+          "type" : "aws_proxy"
+        },
+        "responses": {
+          "200": {
+            "description": "return product"
+          },
+          "204": {
+            "description": "product not found"
+          },
+          "500": {
+            "description": "some error occured"
+          }
+        }
+      }
+    },
+    "/products" : {
+      "get" : {
+        "x-amazon-apigateway-integration" : {
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:504945080963:function:ProductServiceStack-ProductsGetProductsListHandler-FTBb7pYjHcj5/invocations",
+          "passthroughBehavior" : "when_no_match",
+          "type" : "aws_proxy"
+        },
+        "responses": {
+          "200": {
+            "description": "return products"
+          },
+          "500": {
+            "description": "some error occured"
+          }
+        }
+      }
+    }
+  },
+  "components" : { }
+}
