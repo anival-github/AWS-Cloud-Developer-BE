@@ -1,0 +1,60 @@
+{
+  "AWS-Cloud-Developer-BE-2023-products": [
+      {
+          "PutRequest": {
+              "Item": {
+                "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80aa"},
+                "description": {"S": "Short Product Description1"},
+                "price": {"N": "24"},
+                "title": {"S": "ProductOne"}
+              }
+          }
+      },
+      {
+          "PutRequest": {
+              "Item": {
+                "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a1"},
+                "description": {"S": "Short Product Description7"},
+                "price": {"N": "15"},
+                "title": {"S": "ProductTitle"}
+              }
+          }
+      },
+      {
+          "PutRequest": {
+              "Item": {
+                "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a3"},
+                "description": {"S": "Short Product Description48"},
+                "price": {"N": "18"},
+                "title": {"S": "Product2"}
+              }
+          }
+      }
+  ],
+  "AWS-Cloud-Developer-BE-2023-stocks": [
+    {
+      "PutRequest": {
+          "Item": {
+            "product_id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80aa"},
+            "count": {"N": "24"}
+          }
+      }
+  },
+  {
+      "PutRequest": {
+          "Item": {
+            "product_id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a1"},
+            "count": {"N": "15"}
+          }
+      }
+  },
+  {
+      "PutRequest": {
+          "Item": {
+            "product_id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a3"},
+            "count": {"N": "18"}
+          }
+      }
+  }
+  ]
+}

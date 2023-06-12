@@ -14,7 +14,8 @@
     "deploy:hot": "cdk deploy --hotswap",
     "deploy:watch:hot": "cdk watch",
     "deploy:watch": "cdk watch --no-hotswap",
-    "get-docs": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id fst091zkd3 --stage-name prod --export-type oas30 ./docs/latestswagger2.json"
+    "get-docs": "aws apigateway get-export --parameters extensions='apigateway' --rest-api-id fst091zkd3 --stage-name prod --export-type oas30 ./docs/latestswagger2.json",
+    "db:prefill": "aws dynamodb batch-write-item --request-items file://sample-data.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.115",
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.79.1",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "dotenv": "^16.1.4"
   }
 }
