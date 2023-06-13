@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { products } from './data';
+import AWS from 'aws-sdk';
+const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const getProductIdFromPath = (path: string) => {
   const urlParams = path.split('/').filter(Boolean);
@@ -15,30 +16,39 @@ export const handler = async (
   try {
     const productId = getProductIdFromPath(event.path);
 
-    const productList = await Promise.resolve(products);
+    const [productsDbResponse, stocksDbResponse] = await Promise.all([
+      dynamo.scan({ TableName: process.env.PRODUCTS_DB! }).promise(),
+      dynamo.scan({ TableName: process.env.STOCKS_DB! }).promise(),
+    ]);
+
+    const productList = productsDbResponse?.Items || [];
+    const stocksList = stocksDbResponse?.Items || [];
 
     const product = productList.find((item) => item.id === productId);
 
-    if (product) {
+    if (!product) {
       return {
-        statusCode: 200,
+        statusCode: 204,
         headers: {
           "Access-Control-Allow-Headers" : "Content-Type",
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
         },
-        body: JSON.stringify(product),
-      };
+        body: 'Product not found',
+      };  
     }
 
+    const stockItem = stocksList.find((stock) => stock.product_id === product.id);
+    const productWithStock = { ...product, count: stockItem?.count || 0 };
+
     return {
-      statusCode: 204,
+      statusCode: 200,
       headers: {
         "Access-Control-Allow-Headers" : "Content-Type",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
       },
-      body: 'Product not found',
+      body: JSON.stringify(productWithStock),
     };
   } catch (err) {
     console.log(err);

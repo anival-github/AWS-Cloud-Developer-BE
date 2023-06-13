@@ -1,5 +1,5 @@
 {
-  "AWS-Cloud-Developer-BE-2023-products": [
+  "AWS-Cloud-Developer-BE-2023-products-0.0.1": [
       {
           "PutRequest": {
               "Item": {
@@ -31,7 +31,7 @@
           }
       }
   ],
-  "AWS-Cloud-Developer-BE-2023-stocks": [
+  "AWS-Cloud-Developer-BE-2023-stocks-0.0.1": [
     {
       "PutRequest": {
           "Item": {
