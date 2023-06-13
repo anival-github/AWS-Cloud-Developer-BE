@@ -14,6 +14,7 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
+    console.log(`Request: ${event?.path}, Body: ${event?.body}`);
     const productId = getProductIdFromPath(event.path);
 
     const [productsDbResponse, stocksDbResponse] = await Promise.all([

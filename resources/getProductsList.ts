@@ -1,9 +1,10 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
 import AWS from 'aws-sdk';
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
-export const handler = async (): Promise<APIGatewayProxyResult> => {
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
+    console.log(`Request: ${event?.path}, Body: ${event?.body}`);
     const [productsDbResponse, stocksDbResponse] = await Promise.all([
       dynamo.scan({ TableName: process.env.PRODUCTS_DB! }).promise(),
       dynamo.scan({ TableName: process.env.STOCKS_DB! }).promise(),

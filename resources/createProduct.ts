@@ -8,23 +8,40 @@ export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const uid = crypto.randomUUID();
+    console.log(`Request: ${event?.path}, Body: ${event?.body}`);
+
+    const body = event?.body;
 
     if (!event?.body) {
       return {
-        statusCode: 200,
+        statusCode: 400,
         headers: {
           'Access-Control-Allow-Headers': 'Content-Type',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
         },
-        body: JSON.stringify({ uid, type: typeof uid }),
+        body: JSON.stringify({ message: "Please provide product data" }),
       };
     }
 
     const requestBody = JSON.parse(event.body);
-
     const { count = 0, price, title, description } = requestBody || {};
+
+    const isDataCorrect = typeof price === 'number' && typeof title === 'string' && typeof description === 'string' && typeof count === 'number';
+
+    if (!isDataCorrect) {
+      return {
+        statusCode: 400,
+        headers: {
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+        },
+        body: JSON.stringify({ message: "Product data is invalid" }),
+      };
+    }
+
+    const uid = crypto.randomUUID();
 
     const newProductItem = {
       id: uid,
@@ -38,8 +55,7 @@ export const handler = async (
       count,
     };
 
-
-    const result = await dynamo.transactWrite({
+    await dynamo.transactWrite({
       TransactItems: [
         {
           Put: {
@@ -57,23 +73,20 @@ export const handler = async (
     }).promise();
 
     return {
-      statusCode: 200,
+      statusCode: 201,
       headers: {
         'Access-Control-Allow-Headers': 'Content-Type',
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
       },
-      body: JSON.stringify({ result }),
+      body: JSON.stringify({ message: 'Created' }),
     };
   } catch (err) {
     console.log(err);
     return {
       statusCode: 500,
       body: JSON.stringify({
-        err,
-        CancellationReasons: err.CancellationReasons,
-        TableName: process.env.PRODUCTS_DB!,
-        TableName2: process.env.STOCKS_DB!,
+        message: 'Some error occured'
       }),
     };
   }
