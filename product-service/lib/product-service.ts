@@ -73,6 +73,14 @@ export class ProductService extends Construct {
     const createProductHandlerIntegration = new apigateway.LambdaIntegration(createProductHandler);
 
     const productsResource = api.root.addResource("products");
+
+    productsResource.addCorsPreflight({
+      allowHeaders: ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key'],
+      allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      allowCredentials: true,
+      allowOrigins: ['*'],
+    });
+
     productsResource.addMethod("GET", getProductsListHandlerIntegration);
     productsResource.addMethod("POST", createProductHandlerIntegration);
 

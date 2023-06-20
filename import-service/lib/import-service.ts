@@ -23,26 +23,8 @@ export class ImportService extends Construct {
     const importProductsFileLambda = new NodejsFunction(this, 'importProductsFile', {runtime: lambda.Runtime.NODEJS_18_X,environment: {BUCKET_NAME: config.BUCKET_NAME}});
     const importFileParserLambda = new NodejsFunction(this, 'importFileParser', {runtime: lambda.Runtime.NODEJS_18_X,environment: {BUCKET_NAME: config.BUCKET_NAME}});
 
-    // const importProductsFileLambda = new lambda.Function(this, "importProductsFile", {
-    //   runtime: lambda.Runtime.NODEJS_18_X,
-    //   code: lambda.Code.fromAsset("lambdas"),
-    //   handler: "importProductsFile.handler",
-    //   environment: {
-    //     BUCKET_NAME: config.BUCKET_NAME,
-    //   }
-    // });
-
     filesBucket.grantReadWrite(importProductsFileLambda);
     filesBucket.grantReadWrite(importFileParserLambda);
-
-    // const importFileParserLambda = new lambda.Function(this, "importFileParser", {
-    //   runtime: lambda.Runtime.NODEJS_18_X,
-    //   code: lambda.Code.fromAsset("lambdas"),
-    //   handler: "importFileParser.handler",
-    //   environment: {
-    //     BUCKET_NAME: config.BUCKET_NAME,
-    //   }
-    // });
 
     filesBucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3Notifications.LambdaDestination(importFileParserLambda),   { prefix: 'uploaded/' });
 
@@ -51,8 +33,18 @@ export class ImportService extends Construct {
       description: "This service allow import of files."
     });
 
-    const importProductsFileHandlerIntegration = new apigateway.LambdaIntegration(importProductsFileLambda);
+    const importProductsFileHandlerIntegration = new apigateway.LambdaIntegration(importProductsFileLambda, {
+      requestParameters: {
+        "integration.request.querystring.name": "method.request.querystring.name", 
+      },
+    });
     const importResource = api.root.addResource("import");
-    importResource.addMethod("GET", importProductsFileHandlerIntegration);
+
+    importResource.addMethod("GET", importProductsFileHandlerIntegration, {
+      requestParameters: {
+        "method.request.querystring.name": true,
+      }
+    }
+    );
   }
 }
