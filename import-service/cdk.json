@@ -1,5 +1,5 @@
 {
-  "app": "node ./bin/main.js",
+  "app": "ts-node ./bin/main.ts",
   "watch": {
     "include": [
       "**"
