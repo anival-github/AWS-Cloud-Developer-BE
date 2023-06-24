@@ -4,6 +4,7 @@
   "bin": {
     "main": "bin/main.js"
   },
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "node build.js",
     "watch": "tsc -w",
