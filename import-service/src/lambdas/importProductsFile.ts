@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
-import { createPresignedUrlWithClient } from './createPresignedUrlWithClient';
+import { createPresignedUrlWithClient } from '../utils/createPresignedUrlWithClient';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {

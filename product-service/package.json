@@ -1,13 +1,7 @@
 {
   "name": "aws-cloud-developer-be",
   "version": "0.1.0",
-  "bin": {
-    "main": "bin/main.js"
-  },
-  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "node build.js",
-    "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
     "synth": "cdk synth",
@@ -19,20 +13,19 @@
     "db:prefill": "aws dynamodb batch-write-item --request-items file://sample-data.json --return-consumed-capacity INDEXES --return-item-collection-metrics SIZE"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.115",
+    "@types/aws-lambda": "^8.10.119",
     "@types/jest": "^29.5.1",
     "@types/node": "20.1.0",
-    "aws-cdk": "2.79.1",
+    "aws-cdk-lib": "^2.85.0",
     "aws-lambda": "^1.0.7",
-    "esbuild": "^0.17.19",
+    "constructs": "^10.2.58",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
     "typescript": "~5.0.4"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.79.1",
     "aws-sdk": "^2.1396.0",
-    "constructs": "^10.0.0",
     "dotenv": "^16.1.4"
   }
 }
