@@ -1,31 +1,57 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { products } from '../../src/resources/data';
-import { handler } from '../../src/lambdas/getProductsById';
+import { handler } from '../../src/lambdas/catalogBatchProcess';
+import { createProduct } from '../../src/dynamoDb/createProduct';
+import { snsClient } from '../../src/utils/snsClient';
+import { ProductDataSchema } from '../../src/schemas/createProductDto';
 
-describe('Get product by id test', () => {
-  it('Return product by id', async () => {
-    const id = '7567ec4b-b10c-48c5-9345-fc73c48a80aa';
-    const mockEvent = { path: `/products/${id}` } as APIGatewayProxyEvent;
+jest.mock('../../src/dynamoDb/createProduct', () => ({
+  createProduct: jest.fn(),
+}))
 
-    const expectedProduct = products.find(item => item.id === id);
-    const result = await handler(mockEvent);
+jest.mock('../../src/utils/snsClient', () => ({
+  snsClient: {
+    publish: jest.fn()
+  },
+}))
 
-    expect(result).toEqual({
+describe('Test catalogBatchProcess handler', () => {
+  it('catalogBatchProcess handler works correctly', async () => {
+    process.env.IMPORT_PRODUCTS_TOPIC_ARN = "testARN";
+    const productData = {title: 'title', count: 1, description: 'descriptoion', price: 100};
+    const spy = jest.spyOn(ProductDataSchema, 'validate');
+
+    const event: any = {
+      Records: [
+        {
+          body: JSON.stringify(productData),
+        }
+      ],
+    };
+
+    (createProduct as jest.Mock).mockResolvedValue({id: 123, message: 'created' });
+    (snsClient.publish as jest.Mock).mockResolvedValue('success');
+
+    const expected = {
       statusCode: 200,
-      headers: {},
-      body: JSON.stringify(expectedProduct),
-    });
-  });
+      body: JSON.stringify({ message: 'Created', data: JSON.stringify([productData]) }),
+    }
 
-  it('Product not found', async () => {
-    const id = '123';
-    const mockEvent = { path: `/products/${id}` } as APIGatewayProxyEvent;
-    const result = await handler(mockEvent);
+    const result = await handler(event);
 
-    expect(result).toEqual({
-      statusCode: 204,
-      headers: {},
-      body: 'Product not found',
+    expect(spy).toBeCalledTimes(1);
+    expect(spy).toBeCalledWith(productData);
+
+    expect(createProduct).toBeCalledTimes(1);
+    expect(createProduct).toBeCalledWith(productData);
+
+    expect(snsClient.publish).toBeCalledTimes(1);
+    expect(snsClient.publish).toBeCalledWith({
+      TopicArn: process.env.IMPORT_PRODUCTS_TOPIC_ARN,
+      Message: JSON.stringify({id: 123, message: 'created' }),
+      Subject: 'New Files Added to Catalog',
     });
+
+    expect(result).toEqual(expected);
   });
 });

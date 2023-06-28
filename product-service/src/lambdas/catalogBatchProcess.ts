@@ -1,10 +1,8 @@
 import { SQSEvent } from 'aws-lambda';
-import AWS from 'aws-sdk';
 import { createProduct } from '../dynamoDb/createProduct';
 import { CreateProductDto } from '../types/createProductDto';
 import { ProductDataSchema } from '../schemas/createProductDto';
-
-const snsClient = new AWS.SNS();
+import { snsClient } from '../utils/snsClient';
 
 export const handler = async (
   event: SQSEvent
@@ -34,10 +32,10 @@ export const handler = async (
           count,
           price,
         }).then(result => snsClient.publish({
-          TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
-          Message: JSON.stringify(result),
-          Subject: 'New Files Added to Catalog',
-        }))
+            TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
+            Message: JSON.stringify(result),
+            Subject: 'New Files Added to Catalog',
+          }))
       }))
 
     await Promise.all(createProductPromises);
