@@ -17,45 +17,38 @@ export const handler = async (
 
     const IMPORT_PRODUCTS_TOPIC_ARN = process.env.IMPORT_PRODUCTS_TOPIC_ARN as string;
 
+    const createProductPromises = records.map((record) => {
+      const productData: CreateProductDto = JSON.parse(record.body);
 
-    for (const record of records) {
-      const productData = JSON.parse(record.body);
+      const title = productData?.title;
+      const description = productData?.description;
+      const count = productData?.count;
+      const price = productData?.price;
 
-      const {
-        count = 0,
-        price,
-        title,
-        description,
-      } = productData || {};
-
-      // console.log('count typeof: ', typeof Number(count));
-      // console.log('price typeof: ', typeof Number(price));
-      // console.log('title typeof: ', typeof title);
-      // console.log('description typeof: ', typeof description);
+      console.log(`title: ${title}, description: ${description}, count: ${count}, price: ${price}`);
   
-      const isDataCorrect = typeof price === 'number' && typeof title === 'string' && typeof description === 'string' && typeof count === 'number';
-  
-      if (!isDataCorrect) {
-        return {
+      if (!title || !description || !count || !price) {
+        return Promise.reject({
           statusCode: 400,
           body: JSON.stringify({ message: `Product data is incorrect: ${productData}` }),
-        }
+        })
       }
-  
-      const result = await createProduct(productData);
 
-      console.log('result: ', result);
-
-      await snsClient.publish({
+      return createProduct({title,description,count,price})
+      .catch(err => `Some error occured during product creation: ${err}`)
+      .then(result => snsClient.publish({
         TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
         Message: JSON.stringify(result),
         Subject: 'New Files Added to Catalog',
-      })
-    }
+      }))
+      .catch(err => `Some error occured during product snsClient.publish: ${err}`)
+    })
+
+    const results = await Promise.all(createProductPromises);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Created' }),
+      body: JSON.stringify({ message: 'Created', data: JSON.stringify(results) }),
     };
   } catch (err) {
     console.log(err);
