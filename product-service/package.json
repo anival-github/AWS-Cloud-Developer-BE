@@ -5,7 +5,7 @@
     "test": "jest",
     "cdk": "cdk",
     "synth": "cdk synth",
-    "deploy": "cdk deploy",
+    "deploy": "cdk deploy --require-approval 'never'",
     "deploy:hot": "cdk deploy --hotswap",
     "deploy:watch:hot": "cdk watch",
     "deploy:watch": "cdk watch --no-hotswap",
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1396.0",
-    "dotenv": "^16.1.4"
+    "dotenv": "^16.1.4",
+    "yup": "^1.2.0"
   }
 }

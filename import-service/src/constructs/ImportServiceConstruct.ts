@@ -21,10 +21,20 @@ export class ImportServiceConstruct extends Construct {
 
     const filesBucket = new s3.Bucket(this, 'ImportServiceStatickBucket', {
       bucketName: BUCKET_NAME,
-      // autoDeleteObjects: true,
       publicReadAccess: false,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      cors: [
+        {
+          allowedMethods: [
+            s3.HttpMethods.GET,
+            s3.HttpMethods.POST,
+            s3.HttpMethods.PUT,
+          ],
+          allowedOrigins: ['*'],
+          allowedHeaders: ['*'],
+        },
+      ],
     });
 
     const importProductsFileLambda = new NodejsFunction(
@@ -70,12 +80,22 @@ export class ImportServiceConstruct extends Construct {
             'method.request.querystring.name',
         },
       });
+
     const importResource = api.root.addResource('import');
 
     importResource.addMethod('GET', importProductsFileHandlerIntegration, {
       requestParameters: {
         'method.request.querystring.name': true,
       },
+    });
+
+    importResource.addCorsPreflight({
+      allowHeaders: [
+        '*',
+      ],
+      allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      allowCredentials: true,
+      allowOrigins: ['*'],
     });
   }
 }

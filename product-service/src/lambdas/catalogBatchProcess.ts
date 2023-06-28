@@ -1,7 +1,8 @@
-import { APIGatewayProxyResult, SQSEvent } from 'aws-lambda';
+import { SQSEvent } from 'aws-lambda';
 import AWS from 'aws-sdk';
 import { createProduct } from '../dynamoDb/createProduct';
 import { CreateProductDto } from '../types/createProductDto';
+import { ProductDataSchema } from '../schemas/createProductDto';
 
 const snsClient = new AWS.SNS();
 
@@ -12,43 +13,38 @@ export const handler = async (
   body: string,
 }> => {
   try {
-    const records = event?.Records || [];
-    console.log('Records', records);
-
     const IMPORT_PRODUCTS_TOPIC_ARN = process.env.IMPORT_PRODUCTS_TOPIC_ARN as string;
 
-    const createProductPromises = records.map((record) => {
-      const productData: CreateProductDto = JSON.parse(record.body);
+    const records = event?.Records || [];
 
-      const title = productData?.title;
-      const description = productData?.description;
-      const count = productData?.count;
-      const price = productData?.price;
+    const productDataToSave: CreateProductDto[] = records.map((record) => JSON.parse(record?.body))
 
-      console.log(`title: ${title}, description: ${description}, count: ${count}, price: ${price}`);
-  
-      if (!title || !description || !count || !price) {
-        return Promise.reject({
-          statusCode: 400,
-          body: JSON.stringify({ message: `Product data is incorrect: ${productData}` }),
-        })
-      }
+    const createProductPromises = productDataToSave.map((productData) => ProductDataSchema.validate(productData)
+      .then((data) => {
+        const {
+          title,
+          description,
+          count,
+          price,
+        } = data;
 
-      return createProduct({title,description,count,price})
-      .catch(err => `Some error occured during product creation: ${err}`)
-      .then(result => snsClient.publish({
-        TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
-        Message: JSON.stringify(result),
-        Subject: 'New Files Added to Catalog',
+        return createProduct({
+          title,
+          description,
+          count,
+          price,
+        }).then(result => snsClient.publish({
+          TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
+          Message: JSON.stringify(result),
+          Subject: 'New Files Added to Catalog',
+        }))
       }))
-      .catch(err => `Some error occured during product snsClient.publish: ${err}`)
-    })
 
-    const results = await Promise.all(createProductPromises);
+    await Promise.all(createProductPromises);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Created', data: JSON.stringify(results) }),
+      body: JSON.stringify({ message: 'Created', data: JSON.stringify(productDataToSave) }),
     };
   } catch (err) {
     console.log(err);

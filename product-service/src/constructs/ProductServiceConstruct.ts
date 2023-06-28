@@ -12,7 +12,7 @@ export class ProductServiceConstruct extends Construct {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const { PRODUCTS_TABLE_NAME, STOCKS_TABLE_NAME, SNS_BIG_STOCK_EMAIL } = config;
+    const { PRODUCTS_TABLE_NAME, STOCKS_TABLE_NAME, SNS_BIG_STOCK_EMAIL, SNS_ADDITIONAL_EMAIL } = config;
 
     const catalogItemsQueue = new sqs.Queue(this, 'catalogItemsQueue', {
       queueName: 'catalogItemsQueue',
@@ -30,6 +30,17 @@ export class ProductServiceConstruct extends Construct {
       endpoint: SNS_BIG_STOCK_EMAIL,
       protocol: sns.SubscriptionProtocol.EMAIL,
       topic: createProductTopic,
+    })
+
+    new sns.Subscription(this, 'FilteredSubscription', {
+      endpoint: SNS_ADDITIONAL_EMAIL,
+      protocol: sns.SubscriptionProtocol.EMAIL,
+      topic: createProductTopic,
+      filterPolicy: {
+        title: sns.SubscriptionFilter.stringFilter({
+          allowlist: ['book', 'phone']
+        })
+      }
     })
 
     const catalogBatchProcessLambda = new NodejsFunction(
