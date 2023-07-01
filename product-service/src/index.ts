@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-// import dotenv from 'dotenv';
-import { ProductServiceStack } from '../lib/product-service-stack';
+import dotenv from 'dotenv';
+import { ProductServiceStack } from './stacks/ProductServiceStack';
 
-// dotenv.config()
+dotenv.config()
+
 const app = new cdk.App();
+
 new ProductServiceStack(app, 'ProductServiceStack');

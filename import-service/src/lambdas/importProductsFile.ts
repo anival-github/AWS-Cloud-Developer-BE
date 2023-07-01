@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
-import { createPresignedUrlWithClient } from './createPresignedUrlWithClient';
+import { createPresignedUrlWithClient } from '../utils/createPresignedUrlWithClient';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   try {
@@ -18,9 +18,9 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Headers" : "Content-Type",
+        "Access-Control-Allow-Headers" : "*",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        "Access-Control-Allow-Methods": "*"
       },
       body: JSON.stringify({ signedURL: clientUrl }),
     };

@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import doc from "../docs/latestswagger2.json";
+import doc from "../../docs/latestswagger2.json";
 
 export const handler = async (): Promise<APIGatewayProxyResult> => {
   try {

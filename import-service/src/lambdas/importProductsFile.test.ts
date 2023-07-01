@@ -1,6 +1,6 @@
-import { APIGatewayProxyResult, APIGatewayProxyEvent } from 'aws-lambda';
-import { handler } from './import-service.importProductsFile';
-import { createPresignedUrlWithClient } from './createPresignedUrlWithClient';
+import { APIGatewayProxyEvent } from 'aws-lambda';
+import { handler } from './importProductsFile';
+import { createPresignedUrlWithClient } from '../utils/createPresignedUrlWithClient';
 
 jest.mock('./createPresignedUrlWithClient', () => ({
   createPresignedUrlWithClient: jest.fn(),
