@@ -112,6 +112,24 @@ export class ImportServiceConstruct extends Construct {
       },
     });
 
+    api.addGatewayResponse(`gatewayResponseDefault4XX`, {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Credentials': "'true'",
+        'Access-Control-Expose-Headers': "'*'",
+      },
+    })
+
+    api.addGatewayResponse(`gatewayResponseDefault5XX`, {
+      type: apigateway.ResponseType.DEFAULT_5XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Credentials': "'true'",
+        'Access-Control-Expose-Headers': "'*'",
+      },
+    })
+
     const importProductsFileHandlerIntegration =
       new apigateway.LambdaIntegration(importProductsFileLambda, {
         requestParameters: {

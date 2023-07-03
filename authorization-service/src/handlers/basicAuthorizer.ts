@@ -28,21 +28,27 @@ const generatePolicy = function(principalId: string, effect: string, resource: s
 }
 
 export const handler = async (event: APIGatewayTokenAuthorizerEvent): Promise<APIGatewayAuthorizerResult | string> => {
+  const {
+    PASSWORD_KEY,
+    TEST_PASSWORD,
+  } = process.env;
+
+  const tokenString = event.authorizationToken;
+
+  if (!tokenString) {
+    return 'Unauthorized';
+  }
+
+  const token = tokenString.replace('Basic ', '');
+  let decoded;
+
   try {
-    const {
-      PASSWORD_KEY,
-      TEST_PASSWORD,
-    } = process.env;
+    decoded = atob(token);
+  } catch (error) {
+    return generatePolicy('user', 'Deny', event.methodArn);
+  }
 
-    const tokenString = event.authorizationToken;
-
-    if (!tokenString) {
-      return 'Unauthorized';
-    }
-
-    const token = tokenString.replace('Basic ', '');
-    const decoded = atob(token);
-
+  try {
     const [key, value] = decoded.split(':');
     const isTokenCorrect = PASSWORD_KEY === key && TEST_PASSWORD === value;
 
