@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import config from '../config/config';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 export class ImportServiceConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -15,6 +16,7 @@ export class ImportServiceConstruct extends Construct {
     const {
       BUCKET_NAME,
       CATALOG_ITEMS_QUEUE_ARN,
+      AUTH_LAMBDA_ARN,
     } = config;
 
     const catalogItemsQueue = sqs.Queue.fromQueueArn(this, 'catalogItemsQueue', CATALOG_ITEMS_QUEUE_ARN);
@@ -68,10 +70,65 @@ export class ImportServiceConstruct extends Construct {
       { prefix: 'uploaded/' }
     );
 
+    const authLambda = NodejsFunction.fromFunctionArn(this, 'authLambda', AUTH_LAMBDA_ARN);
+
+    const invokeTokenAuthoriserRole = new iam.Role(this, 'Role', {
+      roleName: 'my-api-gateway-role',
+      assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com')
+    });
+
+    const invokeTokenAuthoriserPolicyStatement = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      sid: 'AllowInvokeLambda',
+      resources: ['*'],
+      actions: ['lambda:InvokeFunction']
+    });
+
+    new iam.Policy(this, 'Policy', {
+      policyName: 'my-api-gateway-policy',
+      roles: [invokeTokenAuthoriserRole],
+      statements: [invokeTokenAuthoriserPolicyStatement ]
+    });
+
+    const authorizer = new apigateway.TokenAuthorizer(this, 'RequestAuthorizer', {
+      handler: authLambda,
+      identitySource: apigateway.IdentitySource.header('authorization'),
+      resultsCacheTtl: cdk.Duration.seconds(0),
+      assumeRole: invokeTokenAuthoriserRole,
+    });
+
     const api = new apigateway.RestApi(this, 'import-service-api', {
       restApiName: 'Import Service',
       description: 'This service allow import of files.',
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: ['*'],
+        allowCredentials: true,
+      },
+      defaultMethodOptions: {
+        authorizer,
+        authorizationType: apigateway.AuthorizationType.CUSTOM,
+      },
     });
+
+    api.addGatewayResponse(`gatewayResponseDefault4XX`, {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Credentials': "'true'",
+        'Access-Control-Expose-Headers': "'*'",
+      },
+    })
+
+    api.addGatewayResponse(`gatewayResponseDefault5XX`, {
+      type: apigateway.ResponseType.DEFAULT_5XX,
+      responseHeaders: {
+        'Access-Control-Allow-Origin': "'*'",
+        'Access-Control-Allow-Credentials': "'true'",
+        'Access-Control-Expose-Headers': "'*'",
+      },
+    })
 
     const importProductsFileHandlerIntegration =
       new apigateway.LambdaIntegration(importProductsFileLambda, {
@@ -86,16 +143,7 @@ export class ImportServiceConstruct extends Construct {
     importResource.addMethod('GET', importProductsFileHandlerIntegration, {
       requestParameters: {
         'method.request.querystring.name': true,
-      },
-    });
-
-    importResource.addCorsPreflight({
-      allowHeaders: [
-        '*',
-      ],
-      allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-      allowCredentials: true,
-      allowOrigins: ['*'],
+      }
     });
   }
 }

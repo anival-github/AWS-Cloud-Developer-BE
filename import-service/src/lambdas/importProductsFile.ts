@@ -28,6 +28,11 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     console.log(err);
     return {
       statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Headers" : "*",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "*"
+      },
       body: JSON.stringify({
         message: 'some error happened',
       }),
