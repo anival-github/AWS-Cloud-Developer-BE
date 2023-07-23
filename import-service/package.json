@@ -2,7 +2,6 @@
   "name": "import-service",
   "version": "0.1.0",
   "scripts": {
-    "cdk": "cdk",
     "synth": "cdk synth",
     "deploy": "cdk deploy --require-approval 'never'",
     "deploy:hot": "cdk deploy --hotswap",
