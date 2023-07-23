@@ -6,7 +6,8 @@
                 "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80aa"},
                 "description": {"S": "Short Product Description1"},
                 "price": {"N": "24"},
-                "title": {"S": "ProductOne"}
+                "title": {"S": "ProductOne"},
+                "image": {"S": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO_mzOM4P5t37qjkBb5xFKP4zpfmPdacvH1w&usqp=CAU"}
               }
           }
       },
@@ -16,7 +17,8 @@
                 "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a1"},
                 "description": {"S": "Short Product Description7"},
                 "price": {"N": "15"},
-                "title": {"S": "ProductTitle"}
+                "title": {"S": "ProductTitle"},
+                "image": {"S": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3cPnzAplD7jZmSEtMymdbz-2mDm9txTdEMg&usqp=CAU"}
               }
           }
       },
@@ -26,7 +28,8 @@
                 "id": {"S": "7567ec4b-b10c-48c5-9345-fc73c48a80a3"},
                 "description": {"S": "Short Product Description48"},
                 "price": {"N": "18"},
-                "title": {"S": "Product2"}
+                "title": {"S": "Product2"},
+                "image": {"S": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgWIECe8iudOKz8XuHDqzzY_PmXl74S7ew7w&usqp=CAU"}
               }
           }
       }
