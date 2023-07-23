@@ -9,6 +9,7 @@ export const createProduct: CreateProduct = async ({
   title,
   description,
   count,
+  image,
 }) => {
   try {
     const uid = crypto.randomUUID();
@@ -18,6 +19,7 @@ export const createProduct: CreateProduct = async ({
       price,
       title,
       description,
+      image,
     };
 
     const newStockItem = {

@@ -3,4 +3,5 @@ export interface CreateProductDto {
   title: string;
   description: string;
   count: number;
+  image: string;
 }
