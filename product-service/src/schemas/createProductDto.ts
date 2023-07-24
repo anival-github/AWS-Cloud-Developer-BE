@@ -5,6 +5,7 @@ export const ProductDataSchema = object({
   description: string().required().trim().min(1),
   count: number().required().positive().integer(),
   price: number().required().positive().integer(),
+  image: string(),
 });
 
 export type CreateProductDto = InferType<typeof ProductDataSchema>;

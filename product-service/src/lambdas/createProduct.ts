@@ -1,6 +1,5 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import AWS from 'aws-sdk';
-import crypto from 'crypto';
 import { createProduct } from '../dynamoDb/createProduct';
 import { CreateProductDto } from '../types/createProductDto';
 
@@ -19,9 +18,13 @@ export const handler = async (
       };
     }
 
-    const requestBody = event.body as unknown as CreateProductDto;
+    const requestBody = typeof event.body === 'string' ? JSON.parse(event.body) : event.body as unknown as CreateProductDto;
     // const requestBody = JSON.parse(event.body);
-    const { count = 0, price, title, description } = requestBody || {};
+    const { count = 0, price, title, description, image } = requestBody || {};
+    console.log('count: ', count);
+    console.log('price: ', price);
+    console.log('title: ', title);
+    console.log('description: ', description);
 
     const isDataCorrect = typeof price === 'number' && typeof title === 'string' && typeof description === 'string' && typeof count === 'number';
 
@@ -40,6 +43,7 @@ export const handler = async (
       title,
       description,
       count,
+      image,
     });
 
     return {

@@ -24,6 +24,7 @@ export const handler = async (
           description,
           count,
           price,
+          image,
         } = data;
 
         return createProduct({
@@ -31,6 +32,7 @@ export const handler = async (
           description,
           count,
           price,
+          image,
         }).then(result => snsClient.publish({
             TopicArn: IMPORT_PRODUCTS_TOPIC_ARN,
             Message: JSON.stringify(result),

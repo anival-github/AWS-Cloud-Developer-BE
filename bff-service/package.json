@@ -1,0 +1,24 @@
+{
+  "name": "anival-github-bff-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "image-build": "docker build -t bff-service .",
+    "image-delete": "docker image rm bff-service",
+    "image-list": "docker images",
+    "container-run": "docker run -p 4000:4000 --env-file ./.env --rm --name bff-service bff-service",
+    "container-stop": "docker stop bff-service",
+    "set-env": "eb setenv `cat .env | sed '/^#/ d' | sed '/^$/ d'`",
+    "deploy-dev": "eb deploy anival-github-bff-api-dev --staged"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2"
+  }
+}

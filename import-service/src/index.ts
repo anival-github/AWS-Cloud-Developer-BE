@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { ImportServiceConstruct } from './constructs/ImportServiceConstruct';
+import { App } from 'aws-cdk-lib';
 import './config/config';
+import { ImportServiceStack } from './stacks/ImportServiceStack';
 
-const app = new cdk.App();
+const app = new App();
 
-const stack = new cdk.Stack(app, 'ImportServiceStack');
-
-new ImportServiceConstruct(stack, 'import-service');
+new ImportServiceStack(app, 'ImportServiceStack');
