@@ -14,7 +14,7 @@ RUN npm ci --only=production && npm cache clean --force
 # Bundle app source
 COPY --chown=node:node . .
 
-EXPOSE 8000
+EXPOSE 4000
 
 # Start the server using the production build
 CMD [ "node", "index.js" ]
